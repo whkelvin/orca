@@ -2,57 +2,76 @@ package main
 
 import (
 	"fmt"
-	"golang.org/x/crypto/ssh"
-	"io/ioutil"
-	"log"
+	//"github.com/labstack/echo/v4"
+	//"net/http"
+	. "poc/pkg"
 )
 
+//func initHandler(c echo.Context) error {
+//	out, err := CreateDockerContainer()
+//	if err != nil {
+//		return c.String(http.StatusBadRequest, out)
+//	}
+//	return c.String(http.StatusOK, out)
+//}
+
 func main() {
-	host := "192.168.2.121"
-	port := "22"
-	user := "whkelvin"
-	privateKeyPath := "/home/whkelvin/.ssh/id_rsa_orca"
-	password := "your password here"
+	//e := echo.New()
+	//e.POST("/init", initHandler)
+	//e.Logger.Fatal(e.Start(":1323"))
+	var sshCommandExecutor ICommandExecutor = NewSSHCommandExecutor(&SSHCommandExecutorConfigs{
+		Host:           "localhost",
+		Port:           "22",
+		Username:       "test",
+		PrivateKeyPath: "/home/whkelvin/.ssh/id_rsa_orca",
+		Password:       "test",
+	})
 
-	privateKey, err := ioutil.ReadFile(privateKeyPath)
+	var job Job = *NewJob(&JobConfig{Image: "image place holder"}, sshCommandExecutor)
+
+	job.Init()
+	err := job.Connect()
 	if err != nil {
-		log.Fatalf("Failed to load private key: %v", err)
+		fmt.Println(err)
+		return
 	}
+	defer job.Close()
 
-	// Create the SSH configuration
-	signer, err := ssh.ParsePrivateKeyWithPassphrase(privateKey, []byte(password))
+	wd, err := job.PrintWorkingDirectory()
 	if err != nil {
-		log.Fatalf("Failed to parse private key: %v", err)
+		fmt.Println(err)
+		return
 	}
+	fmt.Println("current directory is: " + wd)
 
-	sshConfig := &ssh.ClientConfig{
-		User: user,
-		Auth: []ssh.AuthMethod{
-			ssh.PublicKeys(signer),
-		},
-		HostKeyCallback: ssh.InsecureIgnoreHostKey(), // WARNING: Insecure, use for testing purposes only
-	}
-
-	// Connect to the SSH server
-	client, err := ssh.Dial("tcp", host+":"+port, sshConfig)
+	fmt.Println("running cmd: ls -la")
+	out, err := job.Execute("ls -la")
 	if err != nil {
-		log.Fatalf("Failed to dial: %v", err)
+		fmt.Println(err)
+		return
 	}
-	defer client.Close()
+	fmt.Println(out)
 
-	// Example: Run a command on the remote server
-	session, err := client.NewSession()
+	fmt.Println("running cmd: mkdir test2")
+	out, err = job.Execute("mkdir -p test2")
 	if err != nil {
-		log.Fatalf("Failed to create session: %v", err)
+		fmt.Println(err)
+		return
 	}
-	defer session.Close()
+	fmt.Println(out)
 
-	// Replace "your_command" with the command you want to execute
-	output, err := session.CombinedOutput("ls -la")
+	fmt.Println("running cmd: cd test2")
+	out, err = job.ChangeDir("test2")
 	if err != nil {
-		log.Fatalf("Failed to run command: %v", err)
+		fmt.Println(err)
+		return
 	}
 
-	fmt.Println(string(output))
-
+	fmt.Println("running cmd: pwd")
+	out, err = job.PrintWorkingDirectory()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(out)
 }
