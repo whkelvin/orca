@@ -74,4 +74,15 @@ func main() {
 		return
 	}
 	fmt.Println(out)
+
+	out, err = job.GenerateScript()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println("\nhere is your shell script!!!")
+	fmt.Println("=============================")
+	fmt.Print(out)
+	fmt.Println("=============================")
 }

@@ -9,6 +9,7 @@ type Job struct {
 	configs          *JobConfig
 	workingDirectory *string
 	cmdExecutor      ICommandExecutor
+	cmdHistory       []string
 }
 
 type JobConfig struct {
@@ -16,7 +17,8 @@ type JobConfig struct {
 }
 
 func NewJob(config *JobConfig, cmdExecutor ICommandExecutor) *Job {
-	return &Job{config, nil, cmdExecutor}
+	cmdHistory := make([]string, 0)
+	return &Job{config, nil, cmdExecutor, cmdHistory}
 }
 
 func (job *Job) Init() {
@@ -50,6 +52,8 @@ func (job *Job) ChangeDir(path string) (string, error) {
 
 	currentDir := strings.Trim(res, "\n")
 	job.workingDirectory = &currentDir
+
+	job.cmdHistory = append(job.cmdHistory, "cd "+path)
 	return *job.workingDirectory, nil
 }
 
@@ -75,7 +79,20 @@ func (job *Job) Execute(cmd string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
+	job.cmdHistory = append(job.cmdHistory, cmd)
 	return out, nil
+}
+
+func (job *Job) GenerateScript() (string, error) {
+	builder := strings.Builder{}
+	for i := 0; i < len(job.cmdHistory); i++ {
+		_, err := builder.WriteString(job.cmdHistory[i] + "\n")
+		if err != nil {
+			return "", err
+		}
+	}
+	return builder.String(), nil
 }
 
 func (job *Job) Close() error {
