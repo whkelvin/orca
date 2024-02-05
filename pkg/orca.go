@@ -16,13 +16,32 @@ type JobConfig struct {
 	Image string
 }
 
-func NewJob(config *JobConfig, cmdExecutor ICommandExecutor) *Job {
+func NewJob(config *JobConfig) *Job {
+	cmdHistory := make([]string, 0)
+
+	var sshCmdExecutor ICommandExecutor = NewSSHCommandExecutor(&SSHCommandExecutorConfigs{
+		Host:           "localhost",
+		Port:           "2222",
+		Username:       "root",
+		PrivateKeyPath: "/home/whkelvin/.ssh/id_rsa_orca",
+		Password:       "root123",
+	})
+	return &Job{config, nil, sshCmdExecutor, cmdHistory}
+}
+
+// if you want to provide a cmd executor
+func CreateJobWithCommandExecutor(config *JobConfig, cmdExecutor ICommandExecutor) *Job {
 	cmdHistory := make([]string, 0)
 	return &Job{config, nil, cmdExecutor, cmdHistory}
 }
 
-func (job *Job) Init() {
+func (job *Job) Init() error {
 	fmt.Println("initilizing job, starting a docker container")
+	err := StartContainer(IMAGE_OS_UBUNTU)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (job *Job) Connect() error {

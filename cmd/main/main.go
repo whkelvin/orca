@@ -21,13 +21,13 @@ func main() {
 	//e.Logger.Fatal(e.Start(":1323"))
 	var sshCommandExecutor ICommandExecutor = NewSSHCommandExecutor(&SSHCommandExecutorConfigs{
 		Host:           "localhost",
-		Port:           "22",
-		Username:       "test",
+		Port:           "2222",
+		Username:       "root",
 		PrivateKeyPath: "/home/whkelvin/.ssh/id_rsa_orca",
-		Password:       "test",
+		Password:       "root123",
 	})
 
-	var job Job = *NewJob(&JobConfig{Image: "image place holder"}, sshCommandExecutor)
+	var job Job = *CreateJobWithCommandExecutor(&JobConfig{Image: "image place holder"}, sshCommandExecutor)
 
 	job.Init()
 	err := job.Connect()

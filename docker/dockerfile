@@ -1,0 +1,12 @@
+# RUN is ran when building the image
+# CMD is ran when running the container
+FROM ubuntu:20.04
+RUN apt-get update && apt-get install -y openssh-server
+RUN mkdir /var/run/sshd
+RUN echo 'root:root123' | chpasswd
+# this allow ssh-copy-id to work
+RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+
+EXPOSE 22
+
+CMD ["/usr/sbin/sshd", "-D"]
