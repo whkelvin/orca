@@ -27,7 +27,7 @@ func main() {
 		Password:       "root123",
 	})
 
-	var job Job = *CreateJobWithCommandExecutor(&JobConfig{Image: "image place holder"}, sshCommandExecutor)
+	var job Job = *CreateJobWithCommandExecutor(&JobConfig{Runner: "ubuntu"}, sshCommandExecutor)
 
 	job.Init()
 	err := job.Connect()

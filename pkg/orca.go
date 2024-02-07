@@ -1,8 +1,10 @@
 package pkg
 
 import (
+	"errors"
 	"fmt"
 	"strings"
+	"time"
 )
 
 type Job struct {
@@ -10,10 +12,16 @@ type Job struct {
 	workingDirectory *string
 	cmdExecutor      ICommandExecutor
 	cmdHistory       []string
+	containerId      *string
 }
 
 type JobConfig struct {
-	Image string
+	Runner string
+}
+
+type JobArgument struct {
+	Name       string
+	ShouldMask bool
 }
 
 func NewJob(config *JobConfig) *Job {
@@ -26,30 +34,50 @@ func NewJob(config *JobConfig) *Job {
 		PrivateKeyPath: "/home/whkelvin/.ssh/id_rsa_orca",
 		Password:       "root123",
 	})
-	return &Job{config, nil, sshCmdExecutor, cmdHistory}
+	return &Job{config, nil, sshCmdExecutor, cmdHistory, nil}
 }
 
 // if you want to provide a cmd executor
 func CreateJobWithCommandExecutor(config *JobConfig, cmdExecutor ICommandExecutor) *Job {
 	cmdHistory := make([]string, 0)
-	return &Job{config, nil, cmdExecutor, cmdHistory}
+	return &Job{config, nil, cmdExecutor, cmdHistory, nil}
 }
 
 func (job *Job) Init() error {
 	fmt.Println("initilizing job, starting a docker container")
-	err := StartContainer(IMAGE_OS_UBUNTU)
-	if err != nil {
-		return err
+	if job.configs.Runner == "ubuntu" {
+		containerId, err := StartContainer(IMAGE_OS_UBUNTU)
+		if err != nil {
+			return err
+		}
+		job.containerId = containerId
+		return nil
+	} else if job.configs.Runner == "node" {
+		containerId, err := StartContainer(IMAGE_OS_NODE)
+		if err != nil {
+			return err
+		}
+		job.containerId = containerId
+		return nil
+	} else {
+		return errors.New("Runner not supporter.")
 	}
-	return nil
 }
 
 func (job *Job) Connect() error {
-	err := job.cmdExecutor.Connect()
-	if err != nil {
-		return err
+	retryCount := 5
+
+	for i := 0; i < retryCount; i++ {
+		err := job.cmdExecutor.Connect()
+		if err != nil {
+			fmt.Printf("Connecting ...")
+			time.Sleep(2 * time.Second)
+			continue
+		}
+		return nil
 	}
-	return nil
+
+	return errors.New("Connection Failed")
 }
 
 func (job *Job) PrintWorkingDirectory() (string, error) {
@@ -116,5 +144,12 @@ func (job *Job) GenerateScript() (string, error) {
 
 func (job *Job) Close() error {
 	fmt.Println("finishing job, nuking docker container")
+	if job.containerId != nil {
+		err := StopContainer(*job.containerId)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }

@@ -3,26 +3,18 @@ package main
 import (
 	"fmt"
 	. "poc/pkg"
-	"time"
 )
 
 func main() {
-	var job Job = *NewJob(&JobConfig{Image: "ubuntu"})
+	var job Job = *NewJob(&JobConfig{Runner: "ubuntu"})
 
 	job.Init()
 
-	retryCount := 5
+	err := job.Connect()
+	defer job.Close()
 
-	for i := 0; i < retryCount; i++ {
-		err := job.Connect()
-		if err != nil {
-			fmt.Println(err)
-			fmt.Printf("Retry: %v / %v \n", i, retryCount)
-			time.Sleep(2 * time.Second)
-			continue
-		}
-		defer job.Close()
-		break
+	if err != nil {
+		return
 	}
 
 	wd, err := job.PrintWorkingDirectory()
