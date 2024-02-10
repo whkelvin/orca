@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	. "poc/pkg"
+	. "orca/pkg/remote_executor"
 )
 
 func main() {
