@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	. "orca/internal/logger"
 	. "orca/pkg/sh_generator"
 )
 
@@ -31,7 +31,7 @@ func main() {
 	}
 	err := tpl.Output()
 	if err != nil {
-		fmt.Println(err.Error())
+		Error(err.Error())
 	}
-	fmt.Println("done")
+	Info("done")
 }
