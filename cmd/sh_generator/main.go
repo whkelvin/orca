@@ -6,32 +6,23 @@ import (
 )
 
 func main() {
-	//arg := Argument{
-	//	Required:      true,
-	//	IsEnvVariable: false,
-	//	Name:          "somename",
-	//}
-	//script := NewScript("test", arg)
-
-	//script.Write("echo %s", arg)
-	//script.Write("echo %s", arg)
-	//script.Write("echo %s", arg)
-	//script.Write("echo %s", arg)
-	//script.Write("echo %s", arg)
-
-	//sh, err := script.Generate()
-	//if err != nil {
-	//	fmt.Println(err.Error())
-	//}
-	//fmt.Println(sh)
-	//script.SaveToFile("./")
-
-	tpl := Template{
-		Script: "echo \"hello world\"",
+	name := Argument{
+		Required:      true,
+		IsEnvVariable: false,
+		Name:          "name",
 	}
-	err := tpl.Output()
+
+	adj := Argument{
+		Required:      true,
+		IsEnvVariable: false,
+		Name:          "adj",
+	}
+	script := NewScript("orca", name, adj)
+
+	script.Write("echo \"Hello %s, you are %s !!!\"", name, adj)
+
+	err := script.SaveToFile("./out/")
 	if err != nil {
 		Error(err.Error())
 	}
-	Info("done")
 }

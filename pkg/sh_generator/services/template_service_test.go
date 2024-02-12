@@ -1,4 +1,4 @@
-package sh_generator
+package services
 
 import (
 	"testing"

@@ -1,9 +1,9 @@
 package sh_generator
 
 import (
-	"errors"
 	"fmt"
-	"io/ioutil"
+	. "orca/internal/fio"
+	services "orca/pkg/sh_generator/services"
 	"strings"
 )
 
@@ -11,10 +11,6 @@ type Argument struct {
 	Required      bool
 	IsEnvVariable bool
 	Name          string
-}
-
-func (arg *Argument) ToString() string {
-	return "$" + arg.Name
 }
 
 type Script struct {
@@ -38,7 +34,7 @@ func (script *Script) Write(cmd string, args ...Argument) error {
 	buf := make([]any, len(args))
 
 	for i := 0; i < len(args); i++ {
-		buf[i] = args[i].ToString()
+		buf[i] = services.ToShellVarName(args[i].Name)
 	}
 	out := fmt.Sprintf(cmd, buf...)
 	script.cmdBuffer = append(script.cmdBuffer, out)
@@ -54,7 +50,40 @@ func (script *Script) Generate() (string, error) {
 			return "", err
 		}
 	}
-	return builder.String(), nil
+
+	var args []services.Argument
+	for i := 0; i < len(script.Arguments); i++ {
+		var arg services.Argument = services.Argument{
+			Name:          script.Arguments[i].Name,
+			Required:      script.Arguments[i].Required,
+			IsEnvVariable: script.Arguments[i].IsEnvVariable,
+		}
+		args = append(args, arg)
+	}
+
+	template := services.ArgBashTemplate{
+		Script:    builder.String(),
+		Arguments: args,
+	}
+
+	out, err := template.Output()
+	if err != nil {
+		return "", err
+	}
+
+	path := "./out/templates/test.txt" // TODO make this a guid
+
+	err = SaveToFile(path, out)
+	if err != nil {
+		return "", err
+	}
+
+	out, err = services.GenerateScript(path)
+	if err != nil {
+		return "", err
+	}
+
+	return out, nil
 }
 
 func (script *Script) SaveToFile(path string) error {
@@ -62,9 +91,9 @@ func (script *Script) SaveToFile(path string) error {
 	if err != nil {
 		return err
 	}
-	err = ioutil.WriteFile(path+script.Name+".sh", []byte(content), 0666)
+	err = SaveToFile(path+script.Name+".sh", content)
 	if err != nil {
-		return errors.New("Error saving file")
+		return err
 	}
 	return nil
 }
