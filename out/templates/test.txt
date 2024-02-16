@@ -4,9 +4,15 @@
 #)Created by argbash-init v2.10.0
 
 
-# ARG_OPTIONAL_SINGLE([name])
+# ARG_OPTIONAL_SINGLE([username])
 
-# ARG_OPTIONAL_SINGLE([adj])
+# ARG_OPTIONAL_SINGLE([password])
+
+# ARG_OPTIONAL_SINGLE([path])
+
+# ARG_OPTIONAL_SINGLE([image_name])
+
+# ARG_OPTIONAL_SINGLE([image_tag])
 
 
 # ARG_HELP([<The general help message of my script>])
@@ -15,12 +21,21 @@
 # [
 
 
-printf 'Value of --%s: %s\n' 'name' "$_arg_name"
+printf 'Value of --%s: %s\n' 'username' "$_arg_username"
 
-printf 'Value of --%s: %s\n' 'adj' "$_arg_adj"
+printf 'Value of --%s: %s\n' 'password' "$_arg_password"
+
+printf 'Value of --%s: %s\n' 'path' "$_arg_path"
+
+printf 'Value of --%s: %s\n' 'image_name' "$_arg_image_name"
+
+printf 'Value of --%s: %s\n' 'image_tag' "$_arg_image_tag"
 
 
-echo "Hello $_arg_name, you are $_arg_adj !!!"
+orca_docker_build_result_result=$(docker image build -t $_arg_image_name:$_arg_image_tag -f $_arg_path .)
+orca_docker_login_result=$(docker login -u $_arg_username -p $_arg_password)
+orca_docker_tag_result=$(docker tag $_arg_image_name $_arg_username/$_arg_image_name)
+orca_docker_push_result=$(docker image push $_arg_username/$_arg_image_name)
 
 
 # ]

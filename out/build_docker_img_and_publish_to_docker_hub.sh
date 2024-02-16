@@ -11,6 +11,8 @@
 
 # ARG_OPTIONAL_SINGLE([image_name])
 
+# ARG_OPTIONAL_SINGLE([image_tag])
+
 
 # ARG_HELP([<The general help message of my script>])
 # ARGBASH_GO()
@@ -41,12 +43,13 @@ _arg_username=
 _arg_password=
 _arg_path=
 _arg_image_name=
+_arg_image_tag=
 
 
 print_help()
 {
 	printf '%s\n' "<The general help message of my script>"
-	printf 'Usage: %s [--username <arg>] [--password <arg>] [--path <arg>] [--image_name <arg>] [-h|--help]\n' "$0"
+	printf 'Usage: %s [--username <arg>] [--password <arg>] [--path <arg>] [--image_name <arg>] [--image_tag <arg>] [-h|--help]\n' "$0"
 	printf '\t%s\n' "-h, --help: Prints help"
 }
 
@@ -89,6 +92,14 @@ parse_commandline()
 			--image_name=*)
 				_arg_image_name="${_key##--image_name=}"
 				;;
+			--image_tag)
+				test $# -lt 2 && die "Missing value for the optional argument '$_key'." 1
+				_arg_image_tag="$2"
+				shift
+				;;
+			--image_tag=*)
+				_arg_image_tag="${_key##--image_tag=}"
+				;;
 			-h|--help)
 				print_help
 				exit 0
@@ -123,10 +134,13 @@ printf 'Value of --%s: %s\n' 'path' "$_arg_path"
 
 printf 'Value of --%s: %s\n' 'image_name' "$_arg_image_name"
 
+printf 'Value of --%s: %s\n' 'image_tag' "$_arg_image_tag"
+
 
 orca_docker_build_result_result=$(docker image build -t $_arg_image_name:$_arg_image_tag -f $_arg_path .)
 orca_docker_login_result=$(docker login -u $_arg_username -p $_arg_password)
 orca_docker_tag_result=$(docker tag $_arg_image_name $_arg_username/$_arg_image_name)
+orca_docker_push_result=$(docker image push $_arg_username/$_arg_image_name)
 
 
 #
