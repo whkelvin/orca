@@ -6,42 +6,53 @@ import (
 )
 
 func main() {
+	testEnv := Argument{
+		IsEnvVariable: true,
+		Name:          "TEST_ENV",
+		ShortName:     "",
+		Mask:          true,
+	}
 	username := Argument{
-		Required:      true,
 		IsEnvVariable: false,
 		Name:          "username",
+		ShortName:     "o",
+		Mask:          false,
 	}
 
 	password := Argument{
-		Required:      true,
 		IsEnvVariable: false,
 		Name:          "password",
+		Mask:          false,
 	}
 
 	path := Argument{
-		Required:      true,
 		IsEnvVariable: false,
 		Name:          "path",
+		Mask:          false,
 	}
 
 	imageName := Argument{
-		Required:      true,
 		IsEnvVariable: false,
-		Name:          "image_name",
+		Name:          "image-name",
+		Mask:          false,
 	}
 
 	tag := Argument{
-		Required:      true,
 		IsEnvVariable: false,
-		Name:          "image_tag",
+		Name:          "image-tag",
+		Mask:          false,
 	}
 
-	script := NewScript("build_docker_img_and_publish_to_docker_hub", username, password, path, imageName, tag)
-
-	script.Write("docker_build_result", `docker image build -t %s:%s -f %s .`, &imageName, &tag, &path)
-	script.Write("docker_login", `docker login -u %s -p %s`, &username, &password)
-	script.Write("docker_tag", `docker tag %s %s/%s`, &imageName, &username, &imageName)
-	script.Write("docker_push", `docker image push %s/%s`, &username, &imageName)
+	script := Script{
+		Name:      "build_docker_img_and_publish_to_docker_hub",
+		Arguments: []Argument{testEnv, username, password, path, imageName, tag},
+		Commands: []string{
+			`docker image build -t "$_arg_image_name":"$_arg_tag" -f $_arg_path .`,
+			`docker login -u "$_arg_username" -p "$_arg_password"`,
+			`docker tag "$_arg_image_name" "$_arg_username"/"$_arg_image_name"`,
+			`docker image push "$_arg_username"/"$_arg_image_name"`,
+		},
+	}
 
 	err := script.SaveToFile("./out/")
 	if err != nil {

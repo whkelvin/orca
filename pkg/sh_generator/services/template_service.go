@@ -3,21 +3,27 @@ package services
 import (
 	"bytes"
 	"os"
+	"strings"
 	"text/template"
 )
 
 type Argument struct {
 	Required      bool
+	DefaultValue  string
 	IsEnvVariable bool
 	Name          string
+	ShortName     string
+	Mask          bool
 }
 
-func (arg *Argument) ToShellVarName() string {
-	return ToShellVarName(arg.Name)
-}
-
-func ToShellVarName(name string) string {
-	return "$_arg_" + name
+func (a *Argument) ToShellString() string {
+	if a.IsEnvVariable == false {
+		a.Name = strings.ToLower(a.Name)
+		a.Name = strings.ReplaceAll(a.Name, "-", "_")
+		return "$_arg_" + a.Name
+	} else {
+		return "$" + a.Name
+	}
 }
 
 type ArgBashTemplate struct {

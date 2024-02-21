@@ -1,0 +1,3 @@
+pkl-gen-go ./assets/pkl/orca.pkl --base-path orca/
+
+

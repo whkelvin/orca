@@ -5,6 +5,7 @@ go 1.19
 require golang.org/x/crypto v0.19.0
 
 require (
+	github.com/apple/pkl-go v0.5.3 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
 	github.com/charmbracelet/lipgloss v0.9.1 // indirect
 	github.com/charmbracelet/log v0.3.1 // indirect

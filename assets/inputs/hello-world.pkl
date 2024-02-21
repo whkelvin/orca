@@ -1,0 +1,14 @@
+amends "../pkl/orca.pkl"
+
+arguments {
+  new {
+    name = "name"
+    shortName = "n"
+    required = true
+    mask = true
+  }
+}
+
+script {
+  "echo 'hello world'"
+}
