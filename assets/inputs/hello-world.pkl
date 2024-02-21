@@ -1,14 +1,16 @@
 amends "../pkl/orca.pkl"
 
+name = "HelloWorld"
+
 arguments {
   new {
     name = "name"
     shortName = "n"
-    required = true
+    isEnvVariable = false
     mask = true
   }
 }
 
 script {
-  "echo 'hello world'"
+  #"echo "hello "$_arg_name" !!""#
 }

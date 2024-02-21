@@ -2,11 +2,11 @@
 package orca
 
 type Argument struct {
+	IsEnvVariable bool `pkl:"isEnvVariable"`
+
 	Name string `pkl:"name"`
 
 	ShortName *string `pkl:"shortName"`
-
-	Required bool `pkl:"required"`
 
 	Mask bool `pkl:"mask"`
 }

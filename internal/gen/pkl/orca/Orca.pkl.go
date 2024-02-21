@@ -8,6 +8,8 @@ import (
 )
 
 type Orca struct {
+	Name string `pkl:"name"`
+
 	Arguments []*Argument `pkl:"arguments"`
 
 	Script []string `pkl:"script"`
