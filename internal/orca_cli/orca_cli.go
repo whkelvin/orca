@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/cobra"
 	"orca/internal/gen/pkl/orca"
 	. "orca/internal/logger"
-	. "orca/pkg/sh_generator"
+	. "orca/internal/sh_generator"
 	"os"
 )
 
