@@ -16,28 +16,40 @@ type Argument struct {
 	Mask          bool
 }
 
-func (a *Argument) ToShellString() string {
+func (a *Argument) ToShellVarReference() string {
+	tmp := a.Name
 	if a.IsEnvVariable == false {
-		a.Name = strings.ToLower(a.Name)
-		a.Name = strings.ReplaceAll(a.Name, "-", "_")
-		return "$_arg_" + a.Name
+		tmp = strings.ToLower(tmp)
+		tmp = strings.ReplaceAll(tmp, "-", "_")
+		return "$_arg_" + tmp
 	} else {
-		return "$" + a.Name
+		return "$" + tmp
 	}
 }
 
-type ArgBashTemplate struct {
+func (a *Argument) ToShellVarName() string {
+	tmp := a.Name
+	if a.IsEnvVariable == false {
+		tmp = strings.ToLower(tmp)
+		tmp = strings.ReplaceAll(tmp, "-", "_")
+		return "_arg_" + tmp
+	} else {
+		return ""
+	}
+}
+
+type ScriptTemplate struct {
 	Arguments []Argument
 	Script    string
 }
 
-func (t *ArgBashTemplate) Output() (string, error) {
-	txt, err := os.ReadFile("./assets/templates/argbash.txt")
+func (t *ScriptTemplate) Output() (string, error) {
+	txt, err := os.ReadFile("./assets/templates/script.txt")
 	if err != nil {
 		return "", err
 	}
 
-	tmpl, err := template.New("orca").Parse(string(txt))
+	tmpl, err := template.New("script").Parse(string(txt))
 	if err != nil {
 		return "", err
 	}

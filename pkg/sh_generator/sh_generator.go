@@ -23,7 +23,7 @@ type Script struct {
 	Commands  []string
 }
 
-func (script *Script) ToShellString() string {
+func (script *Script) ToShellScript() string {
 	builder := strings.Builder{}
 	for i := 0; i < len(script.Commands); i++ {
 		_, err := builder.WriteString(script.Commands[i] + "\n")
@@ -43,7 +43,7 @@ func (script *Script) ToShellString() string {
 		args = append(args, arg)
 	}
 
-	template := services.ArgBashTemplate{
+	template := services.ScriptTemplate{
 		Script:    builder.String(),
 		Arguments: args,
 	}
@@ -53,23 +53,11 @@ func (script *Script) ToShellString() string {
 		panic(err.Error())
 	}
 
-	path := "./out/templates/test.txt" // TODO make this a guid
-
-	err = SaveToFile(path, out)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	out, err = services.GenerateScript(path)
-	if err != nil {
-		panic(err.Error())
-	}
-
 	return out
 }
 
 func (script *Script) SaveToFile(path string) error {
-	content := script.ToShellString()
+	content := script.ToShellScript()
 	err := SaveToFile(path+script.Name+".sh", content)
 	if err != nil {
 		return err

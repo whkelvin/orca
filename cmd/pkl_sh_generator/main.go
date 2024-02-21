@@ -11,4 +11,5 @@ func main() {
 	if err != nil {
 		Error(err.Error())
 	}
+	// TODO parse cfg and generate script here
 }

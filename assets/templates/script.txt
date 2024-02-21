@@ -1,0 +1,113 @@
+#!/bin/bash
+
+die()
+{
+	local _ret="${2:-1}"
+	test "${_PRINT_HELP:-no}" = yes && print_help >&2
+	echo "$1" >&2
+	exit "${_ret}"
+}
+
+maskPrint () {
+  local perc=100  ## percent to obfuscate
+  local i=0
+  for((i=0; i < ${#1}; i++))
+  do
+    if [ $(( $RANDOM % 100 )) -lt "$perc" ]
+    then
+        printf '%s' '*'
+    else
+        printf '%s' "${1:i:1}"
+    fi
+  done
+  echo
+}
+
+print_help()
+{
+	printf '%s\n' "<The general help message of my script>"
+	printf 'Usage: %s ' "$0"
+    {{range $arg := .Arguments}} {{if ne $arg.IsEnvVariable true}} {{if ne $arg.ShortName ""}}
+    printf '[-{{$arg.ShortName}}|--{{$arg.Name}} <arg>]' {{else}}
+    printf '[--{{$arg.Name}} <arg>]' {{end}}{{end}}{{end}}
+	printf '[-h|--help]\n'
+}
+
+parse_commandline()
+{
+	while test $# -gt 0
+	do
+		_key="$1"
+		case "$_key" in
+            {{range $arg := .Arguments}} {{if ne $arg.IsEnvVariable true}} {{if ne $arg.ShortName ""}}
+			-{{$arg.ShortName}}|--{{$arg.Name}})
+				{{$arg.ToShellVarName}}="$2"
+				shift
+				;;
+			--{{$arg.Name}}=*)
+				{{$arg.ToShellVarName}}="${_key##--{{$arg.Name}}=}"
+				;;
+			-o*)
+				{{$arg.ToShellVarName}}="${_key##-{{$arg.ShortName}}}"
+				;;
+{{else}}
+			--{{$arg.Name}})
+				{{$arg.ToShellVarName}}="$2"
+				shift
+				;;
+			--{{$arg.Name}}=*)
+				{{$arg.ToShellVarName}}="${_key##--{{$arg.Name}}=}"
+				;;{{end}}{{end}}{{end}}
+			-h|--help)
+				print_help
+				exit 0
+				;;
+			-h*)
+				print_help
+				exit 0
+				;;
+			*)
+				_PRINT_HELP=yes die "FATAL ERROR: Got an unexpected argument '$1'" 1
+				;;
+		esac
+		shift
+	done
+}
+
+validate_args() {
+  {{range $arg := .Arguments}} {{if ne $arg.IsEnvVariable true}}
+	if [ -z "{{$arg.ToShellVarReference}}" ]
+    then
+      _PRINT_HELP=yes die "Missing value for arg: '{{$arg.Name}}'" 1
+    fi
+  {{end}} {{end}}
+}
+
+
+# Variable Initialization
+{{range $arg := .Arguments}} {{if ne $arg.IsEnvVariable true}}
+{{$arg.ToShellVarName}}=
+{{end}}{{end}}
+
+parse_commandline "$@"
+validate_args
+
+printf '===== ENV VARIABLES =======\n'
+{{range $arg := .Arguments}} {{if eq $arg.IsEnvVariable true}} {{if eq $arg.Mask true}}
+printf "  {{$arg.Name}}: "
+maskPrint "{{$arg.ToShellVarReference}}"
+{{else}}
+printf "  {{$arg.Name}}: %s\n" "{{$arg.ToShellVarReference}}"
+{{end}} {{end}} {{end}}
+printf '===========================\n'
+
+printf '===== INPUT ARGUMENTS =====\n'
+{{range $arg := .Arguments}} {{if eq $arg.IsEnvVariable false}} {{if eq $arg.Mask true}}
+printf "  --{{$arg.Name}}: "
+maskPrint "{{$arg.ToShellVarReference}}"
+{{else}}
+printf "  --{{$arg.Name}}: %s\n" "{{$arg.ToShellVarReference}}"
+{{end}} {{end}} {{end}}
+printf '===========================\n'
+
+{{.Script}}

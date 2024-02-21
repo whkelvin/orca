@@ -10,13 +10,13 @@ func main() {
 		IsEnvVariable: true,
 		Name:          "TEST_ENV",
 		ShortName:     "",
-		Mask:          true,
+		Mask:          false,
 	}
 	username := Argument{
 		IsEnvVariable: false,
 		Name:          "username",
 		ShortName:     "o",
-		Mask:          false,
+		Mask:          true,
 	}
 
 	password := Argument{
@@ -44,13 +44,14 @@ func main() {
 	}
 
 	script := Script{
-		Name:      "build_docker_img_and_publish_to_docker_hub",
+		Name:      "orca", //"build_docker_img_and_publish_to_docker_hub",
 		Arguments: []Argument{testEnv, username, password, path, imageName, tag},
 		Commands: []string{
-			`docker image build -t "$_arg_image_name":"$_arg_tag" -f $_arg_path .`,
-			`docker login -u "$_arg_username" -p "$_arg_password"`,
-			`docker tag "$_arg_image_name" "$_arg_username"/"$_arg_image_name"`,
-			`docker image push "$_arg_username"/"$_arg_image_name"`,
+			`echo "hello $_arg_username"`,
+			`echo "hello $_arg_password"`,
+			`echo "hello $_arg_path"`,
+			`echo "hello $_arg_image_name"`,
+			`echo "hello $_arg_image_tag"`,
 		},
 	}
 
