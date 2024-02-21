@@ -2,7 +2,7 @@ package services
 
 import (
 	"bytes"
-	"os"
+	_ "embed"
 	"strings"
 	"text/template"
 )
@@ -43,13 +43,12 @@ type ScriptTemplate struct {
 	Script    string
 }
 
-func (t *ScriptTemplate) Output() (string, error) {
-	txt, err := os.ReadFile("./assets/templates/script.txt")
-	if err != nil {
-		return "", err
-	}
+//go:embed template.txt
+var shTemplate string
 
-	tmpl, err := template.New("script").Parse(string(txt))
+func (t *ScriptTemplate) Output() (string, error) {
+
+	tmpl, err := template.New("script").Parse(shTemplate)
 	if err != nil {
 		return "", err
 	}

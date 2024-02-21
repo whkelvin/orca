@@ -1,4 +1,4 @@
-package internal
+package remote_executor
 
 import (
 	"fmt"

@@ -75,6 +75,13 @@ parse_commandline()
 }
 
 validate_args() {
+  {{range $arg := .Arguments}} {{if eq $arg.IsEnvVariable true}}
+	if [ -z "{{$arg.ToShellVarReference}}" ]
+    then
+      _PRINT_HELP=yes die "Missing ENV Variable: '{{$arg.Name}}'" 1
+    fi
+  {{end}} {{end}}
+
   {{range $arg := .Arguments}} {{if ne $arg.IsEnvVariable true}}
 	if [ -z "{{$arg.ToShellVarReference}}" ]
     then

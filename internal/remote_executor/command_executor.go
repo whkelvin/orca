@@ -1,8 +1,9 @@
-package internal
+package remote_executor
 
 import (
-	"golang.org/x/crypto/ssh"
 	"strings"
+
+	"golang.org/x/crypto/ssh"
 )
 
 type ICommandExecutor interface {
