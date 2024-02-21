@@ -95,5 +95,5 @@ maskPrint "$_arg_name"
   
 printf '===========================\n'
 
- echo "hello "$_arg_name" !!" 
+echo "hello "$_arg_name" !!"
 

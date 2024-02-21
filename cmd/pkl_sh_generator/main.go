@@ -4,7 +4,7 @@ import (
 	"context"
 	"orca/internal/gen/pkl/orca"
 	. "orca/internal/logger"
-	. "orca/pkg/sh_generator"
+	. "orca/internal/sh_generator"
 )
 
 func main() {

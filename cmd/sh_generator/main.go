@@ -2,7 +2,7 @@ package main
 
 import (
 	. "orca/internal/logger"
-	. "orca/pkg/sh_generator"
+	. "orca/internal/sh_generator"
 )
 
 func main() {
