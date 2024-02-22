@@ -12,7 +12,7 @@ arguments {
   }
   new {
     name = "password"
-    shortName = "p"
+    shortName = "x"
     isEnvVariable = false
     mask = true
   }
@@ -37,7 +37,7 @@ arguments {
 }
 
 script {
-  #"docker image build -t "$_arg_image_name":"$_arg_tag" -f "$_arg_path" ."#
+  #"docker image build -t "$_arg_image_name":"$_arg_image_tag" -f "$_arg_path" ."#
   #"docker login -u "$_arg_username" -p "$_arg_password""#
   #"docker tag "$_arg_image_name" "$_arg_username"/"$_arg_image_name""#
   #"docker image push "$_arg_username"/"$_arg_image_name""#
