@@ -1,0 +1,44 @@
+amends "../pkl/orca.pkl"
+
+// Name of your script
+name = "docker-build-and-push"
+
+arguments {
+  new {
+    name = "username"
+    shortName = "u"
+    isEnvVariable = false
+    mask = false
+  }
+  new {
+    name = "password"
+    shortName = "p"
+    isEnvVariable = false
+    mask = true
+  }
+  new {
+    name = "path"
+    shortName = "p"
+    isEnvVariable = false
+    mask = false
+  }
+  new {
+    name = "image-name"
+    shortName = "i"
+    isEnvVariable = false
+    mask = false
+  }
+  new {
+    name = "image-tag"
+    shortName = "t"
+    isEnvVariable = false
+    mask = false
+  }
+}
+
+script {
+  #"docker image build -t "$_arg_image_name":"$_arg_tag" -f "$_arg_path" ."#
+  #"docker login -u "$_arg_username" -p "$_arg_password""#
+  #"docker tag "$_arg_image_name" "$_arg_username"/"$_arg_image_name""#
+  #"docker image push "$_arg_username"/"$_arg_image_name""#
+}
