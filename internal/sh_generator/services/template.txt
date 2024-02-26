@@ -88,7 +88,7 @@ validate_args() {
     then
       _PRINT_HELP=yes die "Missing value for arg: '{{$arg.Name}}'" 1
     fi
-  {{end}} {{end}}
+  {{end}} {{end}} {{end}}
 }
 
 

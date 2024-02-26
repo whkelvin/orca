@@ -27,7 +27,6 @@ arguments {
 }
 
 script {
-  ""
   #"echo "hello "$_arg_name", you are "$_arg_adj" !!""#
   #"echo "TEST_ENV_VAR is "$TEST_ENV_VAR"""#
 }
