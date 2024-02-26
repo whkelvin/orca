@@ -1,4 +1,4 @@
-amends "../pkl/orca.pkl"
+amends "https://raw.githubusercontent.com/whkelvin/orca/master/assets/pkl/orca.pkl"
 
 // Name of your script
 name = "docker-build-and-push"

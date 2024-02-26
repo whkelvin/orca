@@ -8,6 +8,7 @@ import (
 
 type Argument struct {
 	IsEnvVariable bool
+	IsRequired    bool
 	Name          string
 	ShortName     string
 	Mask          bool
@@ -39,6 +40,7 @@ func (script *Script) ToShellScript() string {
 			IsEnvVariable: script.Arguments[i].IsEnvVariable,
 			ShortName:     script.Arguments[i].ShortName,
 			Mask:          script.Arguments[i].Mask,
+			IsRequired:    script.Arguments[i].IsRequired,
 		}
 		args = append(args, arg)
 	}

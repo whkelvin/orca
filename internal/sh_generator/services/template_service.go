@@ -11,6 +11,7 @@ type Argument struct {
 	Required      bool
 	DefaultValue  string
 	IsEnvVariable bool
+	IsRequired    bool
 	Name          string
 	ShortName     string
 	Mask          bool

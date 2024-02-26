@@ -67,6 +67,7 @@ func GenerateShellScriptFromPkl(outputPath string, inputFilePath string) error {
 			Mask:          cfg.Arguments[i].Mask,
 			ShortName:     shortName,
 			IsEnvVariable: cfg.Arguments[i].IsEnvVariable,
+			IsRequired:    cfg.Arguments[i].IsRequired,
 		})
 	}
 

@@ -1,4 +1,4 @@
-amends "../pkl/orca.pkl"
+amends "https://raw.githubusercontent.com/whkelvin/orca/master/assets/pkl/orca.pkl"
 
 // Name of your script
 name = "hello-world"
@@ -9,17 +9,20 @@ arguments {
     shortName = "n"
     isEnvVariable = false
     mask = false
+    isRequired = false
   }
   new {
     name = "adj"
     shortName = "a"
     isEnvVariable = false
     mask = false
+    isRequired = true
   }
   new {
     name = "TEST_ENV_VAR"
     isEnvVariable = true
     mask = true
+    isRequired = true
   }
 }
 
